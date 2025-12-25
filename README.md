@@ -9,7 +9,7 @@ It uses **localStorage** to keep your tasks saved between sessions.
 
 ## 🌐 Live Demo
 
-Check out the live version here: [https://taskit-do.vercel.app/](#)  
+Check out the live version here: [https://taskit-do.vercel.app/]
 
 ---
 
