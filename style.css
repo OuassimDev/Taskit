@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 :root {
   /* ===== Backgrounds ===== */
   --bg-main: #f5f7fb;        /* page background (soft) */
@@ -373,4 +374,203 @@ button:hover{
 .close-btn:hover {
     background-color: var(--bg-main);
     color: var(--text-main);
+}    
+=======
+:root {
+  /* ===== Backgrounds ===== */
+  --bg-main: #f5f7fb;        /* page background (soft) */
+  --bg-card: #ffffff;        /* cards / surfaces */
+  --bg-hover: #eef2ff;       /* hover states */
+
+  /* ===== Text ===== */
+  --text-main: #1f2937;      /* main text */
+  --text-muted: #6b7280;     /* secondary text */
+  --text-light: #9ca3af;     /* subtle / placeholders */
+
+  /* ===== Buttons / Accent ===== */
+  --btn-main: #5b6cff;       /* primary button */
+  --btn-hover: #4657e6;
+  --btn-text: #ffffff;
+
+  /* ===== Borders ===== */
+  --border-main: #e5e7eb;
+  --border-soft: #f1f5f9;
+
+  /* ===== Shadows ===== */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* ===== Fonts ===== */
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, sans-serif;
+
+  /* ===== Radius ===== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+}
+
+
+
+[data-theme="dark"] {
+  /* ===== Backgrounds ===== */
+  --bg-main: #0f1117;        /* app background */
+  --bg-card: #161b22;        /* cards / surfaces */
+  --bg-hover: #1f2937;       /* hover states */
+
+  /* ===== Text ===== */
+  --text-main: #e5e7eb;      /* main text */
+  --text-muted: #9ca3af;     /* secondary text */
+  --text-light: #6b7280;     /* subtle text */
+
+  /* ===== Buttons / Accent ===== */
+  --btn-main: #61dafb;       /* React blue */
+  --btn-hover: #4ec1e6;
+  --btn-text: #020617;
+
+  /* ===== Borders ===== */
+  --border-main: #2a2f3a;
+  --border-soft: #1e293b;
+
+  /* ===== Shadows ===== */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.7);
+
+  /* ===== Fonts ===== */
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, sans-serif;
+
+  /* ===== Radius ===== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+}
+*{
+    font-family: var(--font-main);
+    font-weight: 600;
+}
+body{
+    background-color: var(--bg-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+}
+button{
+    background-color: var(--btn-main);
+    color: (var(--btn-text));
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    place-content: center;
+    align-items: center;
+    border: none;
+
+}
+button:hover{
+    background-color: var(--btn-hover);
+}
+#add-btn{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 50px;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    border: none;
+    outline: none;
+    font-size: larger;
+    z-index: 99999;
+}
+
+#addmenu{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--bg-card);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    place-content: center;
+    width: max(400px,600px);
+    height: 200px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    color: var(--text-main);
+}
+@media (max-width:768px) {
+    #addmenu{
+        width: min(400px,600px);
+
+    }
+    #add-btn{
+        margin: 15px;
+    }
+    
+}
+.inputfield{
+    display: flex;
+    width: 85%;
+    align-items: center;
+    gap: 1rem;
+}
+.inputfield button{
+    border: solid 2px var(--bg-main);
+    border-radius: 9px;
+    height: 50px;
+    width: 50px;
+    
+}
+#listinput{
+    width: 80%;
+    height: 45px;
+    font-size: medium;
+    border: solid 2px var(--bg-main);
+    box-shadow: var(--shadow-md);
+    border-radius: 6px;
+    outline: none;
+    padding-left: 10px;
+}
+.tasks-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    min-height: 60vh;
+    overflow-y: auto;
+    padding-top: 10px;
+    
+}
+.task{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 75%;
+    border-radius: 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: var(--bg-card);
+    box-shadow:var(--shadow-sm);
+    transition: all 0.3s;    
+}
+.task:hover{
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+
+    
+    
+}
+.task-btns{
+    display: flex;
+    gap: 1rem;
+}
+.task-btns button{
+    height: 25px;
+    width: 40px;
+    border-radius: 6px;
+    color: var(--btn-text);
+>>>>>>> 50bdf2eef408f252f3b26d671bd9cdd4218fcd0a
 }
