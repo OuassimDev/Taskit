@@ -28,7 +28,7 @@ Check out the live version here: [https://taskit-do.vercel.app/]
 - HTML5  
 - CSS3  
 - JavaScript (ES6)  
-- Browser `localStorage`  
+- Some `localStorage`  
 
 ---
 
