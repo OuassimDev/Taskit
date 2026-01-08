@@ -15,7 +15,7 @@ Check out the live version here: [https://taskit-do.vercel.app/]
 
 ## ✨ Features
 
-- Add and delete tasks
+- Add / Edit and delete tasks
 - Mark tasks as completed
 - Tasks persist using `localStorage`
 - Responsive and mobile-friendly design
