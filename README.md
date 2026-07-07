@@ -10,7 +10,7 @@ Check out the live version here: [https://taskit-do.vercel.app/](https://taskit-
 
 ---
 
-## ✨ Features
+## ✨ Features 
 
 - **User Authentication:** Securely sign up or sign in to manage your personal tasks.
 - **Task Management:** Create, edit, and delete tasks seamlessly.
