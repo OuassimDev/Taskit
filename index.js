@@ -13,17 +13,25 @@ const authError = document.getElementById("auth-error");
 const signInBtn = document.getElementById("auth-signin-btn");
 const signUpBtn = document.getElementById("auth-signup-btn");
 const signOutBtn = document.getElementById("signout-btn");
+let showmenu = document.getElementById("add-btn");
+let showmenu2 = document.getElementById("add-btn2");
+let menu = document.getElementById("addmenu");
 
 function showApp() {
     authScreen.style.display = "none";
     appNav.style.display = "flex";
     appMain.style.display = "block";
+    if (window.innerWidth > 768) {
+        showmenu.style.display = "flex";
+    }
 }
 
 function showAuth() {
     authScreen.style.display = "flex";
     appNav.style.display = "none";
     appMain.style.display = "none";
+    showmenu.style.display = "none";
+    menu.classList.remove("is-active");
     taskcontainer.innerHTML = "";
 }
 
@@ -246,10 +254,6 @@ input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") addtask();
 });
 
-let showmenu = document.getElementById("add-btn");
-let showmenu2 = document.getElementById("add-btn2");
-let menu = document.getElementById("addmenu");
-
 function toggleMenu() {
     if (!menu.classList.contains("is-active")) {
         menu.classList.add("is-active");
@@ -324,3 +328,13 @@ document.addEventListener('click', (e) => {
 let discord = document.getElementById("Discord-switch");
 let dtext = document.getElementById("Text-switch");
 discord.addEventListener("click", () => { dtext.textContent = "nyxx2429"; });
+
+window.addEventListener("resize", () => {
+    if (authScreen.style.display !== "flex") {
+        if (window.innerWidth <= 768) {
+            showmenu.style.display = "none";
+        } else {
+            showmenu.style.display = "flex";
+        }
+    }
+});
