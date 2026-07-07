@@ -8,11 +8,26 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="checklist.png">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body id="body">
 
+    <div id="auth-screen">
+        <div class="auth-box">
+            <span class="logo-wrap">
+                <img src="checklist.png" height="40px" alt="">
+                <h1>Taskit</h1>
+            </span>
+            <p class="subtitle" style="margin-bottom: 24px;">Sign in to see your tasks</p>
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Password">
+            <p id="auth-error" class="auth-error"></p>
+            <button id="auth-signin-btn" class="auth-btn">Sign In</button>
+            <button id="auth-signup-btn" class="auth-btn auth-btn-secondary">Create Account</button>
+        </div>
+    </div>
 
-    <div class="side-nav">
+    <div class="side-nav" style="display: none;" id="app-nav">
         <img src="checklist.png" alt="Logo" height="40px" class="nav-logo">
         <div class="side-nav-btns">
             <button id="light-mode" title="Light mode">
@@ -26,6 +41,9 @@
             </button>
             <button id="info" title="About">
                 <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M453-280h60v-240h-60v240Zm26.98-314q14.02 0 23.52-9.2T513-626q0-14.45-9.48-24.22-9.48-9.78-23.5-9.78t-23.52 9.78Q447-640.45 447-626q0 13.6 9.48 22.8 9.48 9.2 23.5 9.2Zm.29 514q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Zm.23-60Q622-140 721-239.5t99-241Q820-622 721.19-721T480-820q-141 0-240.5 98.81T140-480q0 141 99.5 240.5t241 99.5Zm-.5-340Z"/></svg>
+            </button>
+            <button id="signout-btn" title="Sign out">
+                <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
             </button>
         </div>
     </div>
@@ -46,7 +64,7 @@
         </div>
     </div>
 
-    <main class="main-content">
+    <main class="main-content" id="app-main" style="display: none;">
         <div class="header">
             <span class="logo-wrap">
                 <img src="checklist.png" height="48px" alt="">
@@ -73,7 +91,7 @@
         </div>
         <div class="info-content">
             <p>A simple and elegant task management app to help you stay organized and productive.</p>
-            <p class="info-version">Version 1.3</p>
+            <p class="info-version">Version 1.4</p>
         </div>
         <div class="social-links">
             <a href="https://github.com/OuassimDev/taskit" class="social-btn" target="_blank">
@@ -91,6 +109,7 @@
         </div>
     </div>
 
+    <script src="supabaseClient.js"></script>
     <script src="index.js"></script>
 </body>
 </html>

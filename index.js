@@ -4,6 +4,70 @@ let inputbtn = document.getElementById("input-btn");
 let tempmsg = document.getElementById("tempmsg");
 let taskCountEl = document.getElementById("task-count");
 
+const authScreen = document.getElementById("auth-screen");
+const appNav = document.getElementById("app-nav");
+const appMain = document.getElementById("app-main");
+const authEmail = document.getElementById("auth-email");
+const authPassword = document.getElementById("auth-password");
+const authError = document.getElementById("auth-error");
+const signInBtn = document.getElementById("auth-signin-btn");
+const signUpBtn = document.getElementById("auth-signup-btn");
+const signOutBtn = document.getElementById("signout-btn");
+
+function showApp() {
+    authScreen.style.display = "none";
+    appNav.style.display = "flex";
+    appMain.style.display = "block";
+}
+
+function showAuth() {
+    authScreen.style.display = "flex";
+    appNav.style.display = "none";
+    appMain.style.display = "none";
+    taskcontainer.innerHTML = "";
+}
+
+async function handleSignIn() {
+    authError.textContent = "";
+    const { error } = await db.auth.signInWithPassword({
+        email: authEmail.value.trim(),
+        password: authPassword.value
+    });
+    if (error) authError.textContent = error.message;
+}
+
+async function handleSignUp() {
+    authError.textContent = "";
+    const { error } = await db.auth.signUp({
+        email: authEmail.value.trim(),
+        password: authPassword.value
+    });
+    if (error) {
+        authError.textContent = error.message;
+    } else {
+        authError.style.color = "#22c55e";
+        authError.textContent = "Account created — check your email if confirmation is required, then sign in.";
+    }
+}
+
+async function handleSignOut() {
+    await db.auth.signOut();
+}
+
+signInBtn.addEventListener("click", handleSignIn);
+signUpBtn.addEventListener("click", handleSignUp);
+signOutBtn.addEventListener("click", handleSignOut);
+authPassword.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSignIn(); });
+
+db.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        showApp();
+        loadTasks();
+    } else {
+        showAuth();
+    }
+});
+
 function updateCount() {
     const total = document.querySelectorAll('.task').length;
     const done = document.querySelectorAll('.task.is-done').length;
@@ -13,16 +77,17 @@ function updateCount() {
 
 function createTaskElement(taskData) {
     const task = document.createElement("div");
-    task.className = "task" + (taskData.isDone ? " is-done" : "");
+    task.className = "task" + (taskData.done ? " is-done" : "");
+    task.dataset.id = taskData.id;
 
     const left = document.createElement("div");
     left.className = "task-left";
 
     const text = document.createElement("p");
     text.className = "task-text";
-    text.textContent = taskData.text;
+    text.textContent = taskData.content;
 
-    if (taskData.isDone) {
+    if (taskData.done) {
         text.style.textDecoration = "line-through";
         text.style.opacity = "0.5";
     }
@@ -38,9 +103,9 @@ function createTaskElement(taskData) {
     dateInput.type = "date";
     dateInput.className = "date-input";
     dateInput.value = taskData.date || "";
-    dateInput.addEventListener("change", () => {
+    dateInput.addEventListener("change", async () => {
         updateBadgeLabel(badge, dateInput.value);
-        saveTasks();
+        await updateTask(taskData.id, { date: dateInput.value || null });
     });
 
     const dateLabel = document.createElement("span");
@@ -57,31 +122,30 @@ function createTaskElement(taskData) {
     editBtn.className = "btn-edit";
     editBtn.title = "Edit";
     editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-528q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L289-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>`;
-    editBtn.addEventListener("click", () => {
+    editBtn.addEventListener("click", async () => {
         const newText = prompt("Edit task:", text.textContent);
         if (newText && newText.trim() !== "") {
             text.textContent = newText.trim();
-            saveTasks();
+            await updateTask(taskData.id, { content: newText.trim() });
         }
     });
 
     const doneBtn = document.createElement("button");
     doneBtn.className = "btn-done";
-    doneBtn.title = taskData.isDone ? "Undo" : "Done";
-    doneBtn.innerHTML = taskData.isDone
+    doneBtn.title = taskData.done ? "Undo" : "Done";
+    doneBtn.innerHTML = taskData.done
         ? `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`
         : `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="m424-408-86-86q-11-11-28-11t-28 11q-11 11-11 28t11 28l114 114q12 12 28 12t28-12l226-226q11-11 11-28t-11-28q-11-11-28-11t-28 11L424-408Zm56 328q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`;
 
-    doneBtn.addEventListener("click", () => {
+    doneBtn.addEventListener("click", async () => {
         const isDone = task.classList.toggle("is-done");
         text.style.textDecoration = isDone ? "line-through" : "none";
         text.style.opacity = isDone ? "0.5" : "1";
-        task.style.backgroundColor = isDone ? "" : "";
         doneBtn.title = isDone ? "Undo" : "Done";
         doneBtn.innerHTML = isDone
             ? `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`
             : `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="m424-408-86-86q-11-11-28-11t-28 11q-11 11-11 28t11 28l114 114q12 12 28 12t28-12l226-226q11-11 11-28t-11-28q-11-11-28-11t-28 11L424-408Zm56 328q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`;
-        saveTasks();
+        await updateTask(taskData.id, { done: isDone });
         updateCount();
     });
 
@@ -89,13 +153,14 @@ function createTaskElement(taskData) {
     delBtn.className = "btn-del";
     delBtn.title = "Delete";
     delBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`;
-    delBtn.addEventListener("click", () => {
+    delBtn.addEventListener("click", async () => {
         task.style.animation = "slideOut 0.25s ease forwards";
+        await deleteTask(taskData.id);
         setTimeout(() => {
             task.remove();
-            saveTasks();
             updateCount();
             if (taskcontainer.children.length === 0) {
+                tempmsg.innerHTML = `Press <strong>+</strong> to add your first task`;
                 tempmsg.style.display = "block";
             }
         }, 240);
@@ -118,14 +183,61 @@ function formatDate(value) {
     return `${d} ${months[parseInt(m)-1]} ${y}`;
 }
 
-function addtask() {
+async function addtask() {
     if (input.value.trim() === "") return alert("Empty Input");
-    const task = createTaskElement({ text: input.value.trim(), isDone: false, date: "" });
+
+    const { data, error } = await db
+        .from("tasks")
+        .insert({ content: input.value.trim(), done: false })
+        .select()
+        .single();
+
+    if (error) {
+        alert("Could not add task: " + error.message);
+        return;
+    }
+
+    const task = createTaskElement(data);
     task.style.animation = "slideIn 0.3s ease forwards";
     taskcontainer.prepend(task);
     input.value = "";
     tempmsg.style.display = "none";
-    saveTasks();
+    updateCount();
+}
+
+async function updateTask(id, fields) {
+    const { error } = await db.from("tasks").update(fields).eq("id", id);
+    if (error) alert("Could not save change: " + error.message);
+}
+
+async function deleteTask(id) {
+    const { error } = await db.from("tasks").delete().eq("id", id);
+    if (error) alert("Could not delete task: " + error.message);
+}
+
+async function loadTasks() {
+    tempmsg.innerHTML = `Loading your checklist...`;
+    tempmsg.style.display = "block";
+    taskcontainer.innerHTML = "";
+
+    const { data, error } = await db
+        .from("tasks")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        alert("Could not load tasks: " + error.message);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        tempmsg.innerHTML = `Press <strong>+</strong> to add your first task`;
+        tempmsg.style.display = "block";
+        updateCount();
+        return;
+    }
+    tempmsg.style.display = "none";
+    data.forEach(taskData => taskcontainer.appendChild(createTaskElement(taskData)));
     updateCount();
 }
 
@@ -134,45 +246,18 @@ input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") addtask();
 });
 
-function saveTasks() {
-    const tasks = Array.from(document.querySelectorAll('.task')).map(task => ({
-        text: task.querySelector('.task-text').textContent,
-        isDone: task.classList.contains('is-done'),
-        date: task.querySelector('.date-input').value
-    }));
-    localStorage.setItem('taskit-tasks', JSON.stringify(tasks));
-}
-
-function loadTasks() {
-    const saved = localStorage.getItem('taskit-tasks');
-    if (!saved) return;
-    const tasks = JSON.parse(saved);
-    if (tasks.length === 0) return;
-    tempmsg.style.display = 'none';
-    taskcontainer.innerHTML = '';
-    tasks.forEach(taskData => taskcontainer.appendChild(createTaskElement(taskData)));
-    updateCount();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadTasks);
-} else {
-    loadTasks();
-}
-
 let showmenu = document.getElementById("add-btn");
 let showmenu2 = document.getElementById("add-btn2");
 let menu = document.getElementById("addmenu");
-menu.style.display = "none";
 
 function toggleMenu() {
-    if (menu.style.display === "none") {
-        menu.style.display = "flex";
+    if (!menu.classList.contains("is-active")) {
+        menu.classList.add("is-active");
         showmenu.style.rotate = "135deg";
         showmenu2.style.rotate = "135deg";
         setTimeout(() => input.focus(), 100);
     } else {
-        menu.style.display = "none";
+        menu.classList.remove("is-active");
         showmenu.style.rotate = "0deg";
         showmenu2.style.rotate = "0deg";
     }
@@ -180,14 +265,14 @@ function toggleMenu() {
 
 document.addEventListener('click', (e) => {
     if (
-        menu.style.display === "flex" &&
+        menu.classList.contains("is-active") &&
         !menu.contains(e.target) &&
         e.target !== showmenu &&
         !showmenu.contains(e.target) &&
         e.target !== showmenu2 &&
         !showmenu2.contains(e.target)
     ) {
-        menu.style.display = "none";
+        menu.classList.remove("is-active");
         showmenu.style.rotate = "0deg";
         showmenu2.style.rotate = "0deg";
     }
